@@ -2,26 +2,40 @@ from tkinter import *
 from tkinter import messagebox
 from random import randint
 
-def bpress(i,j):
+r = 10
+c = 10
+
+def clear(iterator,jiterator):
     global mines
-    if mines[i][j] == 'M':        
-        blist[i][j].destroy()
-        blist[i][j] = Label(frame, text = "M")
-        blist[i][j].grid(row = i, column = j)
+    if mines[iterator][jiterator] == 'M':        
+        blist[iterator][jiterator].destroy()
+        blist[iterator][jiterator] = Label(frame,height = 1, width = 2, text = "M")
+        blist[iterator][jiterator].grid(row = iterator, column = jiterator)
         messagebox.showinfo("Game Over", "You stepped on a mine and lost!!")
 
-    elif mines[i][j] == 0:
-        blist[i][j].destroy()
-        blist[i][j] = Label(frame, text = "")
-        blist[i][j].grid(row = i, column = j)
+    elif mines[iterator][jiterator] == 0:
+        blist[iterator][jiterator].destroy()
+        blist[iterator][jiterator] = Label(frame,height = 1, width = 2, text = "")
+        blist[iterator][jiterator].grid(row = iterator, column = jiterator)
+        checko(iterator, jiterator)
 
     else:
-        blist[i][j].destroy()
-        blist[i][j] = Label(frame, text = mines[i][j])
-        blist[i][j].grid(row = i, column = j)
-    
+        blist[iterator][jiterator].destroy()
+        blist[iterator][jiterator] = Label(frame,height = 1, width = 2, text = mines[iterator][jiterator])
+        blist[iterator][jiterator].grid(row = iterator, column = jiterator)
+
+
+def checko(i,j):
+    global mines
+    for iii in range(i-1,i+2):
+        for jjj in range(j-1, j+2):
+            if iii in range(r) and jjj in range(c):
+                if type(blist[iii][jjj]) is Button:
+                    clear(iii, jjj)
+
 
 def checkad(x,y):
+    global mines
     if mines[x][y] == 'M':
         return 'M'
     else:
@@ -33,8 +47,6 @@ def checkad(x,y):
                         n += 1
         return n
 
-r = 10
-c = 10
 
 mines = []
 for i in range(r):
@@ -54,7 +66,6 @@ for xx in range(r):
     for yy in range(c):
         mines[xx][yy] = checkad(xx, yy)
 
-print(mines)#test
 
 root = Tk()
 frame = Frame(root, height = 400, width = 400)
@@ -64,7 +75,7 @@ blist = []
 for row in range(r):
     blist.append([0]*c)
     for column in range(c):
-        blist[row][column] = Button(frame,text = ' ', height = 1, width = 2, command = lambda row = row, column = column: bpress(row, column))
+        blist[row][column] = Button(frame,text = ' ', height=1, width=2, command=lambda row=row, column=column: clear(row, column))
         blist[row][column].grid(row = row, column = column)
 
 frame.pack()
