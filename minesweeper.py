@@ -2,8 +2,11 @@ from tkinter import *
 from tkinter import messagebox
 from random import randint
 
-r = 10
-c = 10
+r = 8
+c = 8
+n = 8
+
+minesleft = n
 
 def clear(iterator,jiterator):
     global mines
@@ -60,18 +63,22 @@ def checko(i,j):
 
 
 
-def rightc(rr, cc):
+def flag(rr, cc):
+    # flagging
     if blist[rr][cc]['text'] == " ":
         blist[rr][cc].destroy()
         blist[rr][cc] = Button(frame, image = flagp, height = 20, width = 20)
-        blist[rr][cc].bind('<Button-3>', lambda event, rr = rr, cc = cc: rightc(rr, cc))
+        blist[rr][cc].bind('<Button-3>', lambda event, rr = rr, cc = cc: flag(rr, cc))
         blist[rr][cc].grid(row = rr, column = cc)
+        minescoreup()
+    # unflagging
     elif blist[rr][cc]['text'] == "":
         blist[rr][cc].destroy()
         blist[rr][cc] = Button(frame,text=' ',image=pixelvirtual,height=20,width=20,command=lambda row=rr,column=cc:clear(row, column))
-        blist[rr][cc].bind('<Button-3>', lambda event, rr = rr, cc = cc: rightc(rr, cc))
+        blist[rr][cc].bind('<Button-3>', lambda event, rr = rr, cc = cc: flag(rr, cc))
         blist[rr][cc].grid(row = rr, column = cc)
-    
+        minescoredown()
+
 
 def checkad(x,y):
     global mines
@@ -87,15 +94,37 @@ def checkad(x,y):
         return n
 
 def checkwin():
+    q = 0
     for k in range(r):
-        pass
+        for l in range(c):
+            if type(blist[k][l]) == Button and blist[k][l]['text'] == "":
+                if mines[k][l] == 'M':
+                    q += 1
+    if q == n:
+        messagebox.showinfo("","YOU WIN !!!")
+
+def minescoreup():
+    global minesleft
+    minesleft -= 1
+    minesleftl = Label(root, text = minesleft)
+    minesleftl.grid(row = 0, column = 4, sticky = N)
+    if minesleft == 0:
+        checkwin()
+
+def minescoredown():
+    global minesleft
+    minesleft += 1
+    minesleftl = Label(root, text = minesleft)
+    minesleftl.grid(row = 0, column = 4, sticky = N)
+    if minesleft == 0:
+        checkwin()
 
 mines = []
 for i in range(r):
     mines.append([0]*c)
 
 cc = 0
-while cc<15:
+while cc<n:
     a = randint(0,r-1)
     b = randint(0,c-1)
     if mines[a][b] == 'M':
@@ -110,7 +139,8 @@ for xx in range(r):
 
 
 root = Tk()
-frame = Frame(root, height = 400, width = 400)
+root.geometry('{}x{}'.format((r*26 + 26*5), (c*26)))
+frame = Frame(root, height = 200, width = 200)
 
 pixelvirtual = PhotoImage(height = 1, width = 1)
 
@@ -120,14 +150,26 @@ for row in range(r):
     blist.append([0]*c)
     for column in range(c):
         blist[row][column] = Button(frame,text = ' ',image = pixelvirtual ,height=20, width=20, command=lambda row=row, column=column: clear(row, column))
-        blist[row][column].bind('<Button-3>', lambda event, row = row, column = column: rightc(row, column))
+        blist[row][column].bind('<Button-3>', lambda event, row = row, column = column: flag(row, column))
         blist[row][column].grid(row = row, column = column)
 
 flagp = PhotoImage(file = "C:\\Users\\talk2\\OneDrive\\Desktop\\Python\\minesweeper\\Flag.png")
 minep = PhotoImage(file = "C:\\Users\\talk2\\OneDrive\\Desktop\\Python\\minesweeper\\Mine.png")
 
-checkwin()
+frame.grid(row = 0, column = 0, sticky = SW)
 
-frame.pack()
+minesleftlabel = Label(root, text = "Mines left :",)
+minesleftl = Label(root, text = minesleft)
+
+minesleftlabel.grid(row = 0, column = 3, sticky = N)
+minesleftl.grid(row = 0, column = 4, sticky = N)
+
+helpb = Button(root, text = 'Help', height = 1)
+helpb.grid(row = 0, column = 4)
+
+
+settingsb = Button(root, text = 'Settings')
+settingsb.grid(row = 0, column = 4, sticky = S)
+
 
 root.mainloop()
