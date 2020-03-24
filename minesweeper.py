@@ -9,7 +9,7 @@ def clear(iterator,jiterator):
     global mines
     if mines[iterator][jiterator] == 'M':        
         blist[iterator][jiterator].destroy()
-        blist[iterator][jiterator] = Label(frame,height = 1, width = 2,bd = 1,relief = 'ridge', text = "M", font = 'Helvetica 14',)
+        blist[iterator][jiterator] = Label(frame,height = 24, width = 24,bd = 1,relief = 'ridge',image = minep)
         blist[iterator][jiterator].grid(row = iterator, column = jiterator)
         messagebox.showinfo("Game Over", "You stepped on a mine and lost!!")
 
@@ -63,7 +63,7 @@ def checko(i,j):
 def rightc(rr, cc):
     if blist[rr][cc]['text'] == " ":
         blist[rr][cc].destroy()
-        blist[rr][cc] = Button(frame, image = photo, height = 20, width = 20)
+        blist[rr][cc] = Button(frame, image = flagp, height = 20, width = 20)
         blist[rr][cc].bind('<Button-3>', lambda event, rr = rr, cc = cc: rightc(rr, cc))
         blist[rr][cc].grid(row = rr, column = cc)
     elif blist[rr][cc]['text'] == "":
@@ -86,6 +86,9 @@ def checkad(x,y):
                         n += 1
         return n
 
+def checkwin():
+    for k in range(r):
+        pass
 
 mines = []
 for i in range(r):
@@ -120,7 +123,10 @@ for row in range(r):
         blist[row][column].bind('<Button-3>', lambda event, row = row, column = column: rightc(row, column))
         blist[row][column].grid(row = row, column = column)
 
-photo = PhotoImage(file = "C:\\Users\\talk2\\OneDrive\\Desktop\\Python\\minesweeper\\Flag.png")
+flagp = PhotoImage(file = "C:\\Users\\talk2\\OneDrive\\Desktop\\Python\\minesweeper\\Flag.png")
+minep = PhotoImage(file = "C:\\Users\\talk2\\OneDrive\\Desktop\\Python\\minesweeper\\Mine.png")
+
+checkwin()
 
 frame.pack()
 
