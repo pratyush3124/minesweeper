@@ -1,42 +1,6 @@
-from tkinter import Tk, Frame, Button, Label, PhotoImage
+from tkinter import Tk, Frame, Button, Label, PhotoImage,Canvas,Entry
 from tkinter import messagebox
 from random import randint
-
-
-class minesclass():
-    def __init__(self, mr,mc,mn):
-        # creates random mines
-
-        self.mineslist = []
-        for i in range(mr):
-            self.mineslist.append([0]*mc)
-
-        cc = 0
-        while cc<mn:
-            a = randint(0,mr-1)
-            b = randint(0,mc-1)
-            if self.mineslist[a][b] == 'M':
-                pass
-            else:
-                self.mineslist[a][b] = 'M'
-                cc +=1
-
-        for xx in range(mr):
-            for yy in range(mc):
-                self.mineslist[xx][yy] = self.checkad(xx, yy,mr,mc)
-
-    def checkad(self,x,y,mr,mc):
-        if self.mineslist[x][y] == 'M':
-            return 'M'
-        else:
-            s = 0
-            for ii in range(x-1,x+2):
-                for jj in range(y-1, y+2):
-                    if ii in range(mr) and jj in range(mc):
-                        if self.mineslist[ii][jj] == 'M':
-                            s += 1
-            return s
-
 
 class minesweeperclass(Tk):
     def __init__(self, ro, co, no):
@@ -59,8 +23,13 @@ class minesweeperclass(Tk):
         self.helpb = Button(self, text = 'Help', height = 1)
         self.helpb.grid(row = 0, column = 3)
 
-        self.settingsb = Button(self, text = 'Settings')
+        self.settingsb = Button(self, text = 'Settings', command = lambda: self.settings())
         self.settingsb.grid(row = 0, column = 3, sticky = 'S')
+
+    def settings(self):
+        spage = Settings(self)
+        spage.mainloop()
+
 
 class gridclass(Frame):
     def __init__(self, parent, r, c, n):
@@ -72,10 +41,9 @@ class gridclass(Frame):
         self.nomines = n
         self.mines = minesclass(self.rows, self.columns, self.nomines)
 
-        self.flagp = PhotoImage(file = "C:\\Users\\talk2\\OneDrive\\Desktop\\Python\\minesweeper\\Flag.png")
-        self.minep = PhotoImage(file = "C:\\Users\\talk2\\OneDrive\\Desktop\\Python\\minesweeper\\Mine.png")
-
-        self.pixelvirtual = PhotoImage(height = 1, width = 1)
+        self.flagp = PhotoImage(file = ".\\Flag.png")
+        self.minep = PhotoImage(file = ".\\Mine.png")
+        self.empty = PhotoImage(file = ".\\Empty.png")
 
         self.blist = []
 
@@ -83,7 +51,7 @@ class gridclass(Frame):
         for row in range(self.rows):
             self.blist.append([0]*self.columns)
             for column in range(self.columns):
-                self.blist[row][column] = Button(self,text = ' ',image = self.pixelvirtual ,height=20, width=20, command=lambda row=row, column=column: self.clear(parent, row, column))
+                self.blist[row][column] = Button(self,text = ' ',image = self.empty ,height=20, width=20, command=lambda row=row, column=column: self.clear(parent, row, column))
                 self.blist[row][column].bind('<Button-3>', lambda event, row = row, column = column: self.flag(parent, row, column, self.nomines))
                 self.blist[row][column].grid(row = row, column = column)
 
@@ -144,7 +112,7 @@ class gridclass(Frame):
         # unflagging
         elif self.blist[rr][cc]['text'] == "":
             self.blist[rr][cc].destroy()
-            self.blist[rr][cc] = Button(self,text=' ',image=self.pixelvirtual,height=20,width=20,command=lambda row=rr,column=cc:self.clear(parent, row, column))
+            self.blist[rr][cc] = Button(self,text=' ',image=self.empty,height=20,width=20,command=lambda row=rr,column=cc:self.clear(parent, row, column))
             self.blist[rr][cc].bind('<Button-3>', lambda event, rr = rr, cc = cc: self.flag(parent, rr, cc, nn))
             self.blist[rr][cc].grid(row = rr, column = cc)
             self.minescoredown(parent)
@@ -193,7 +161,7 @@ class gridclass(Frame):
         # after game screen
         self.destroy()
 
-        parent.geometry('{}x{}'.format(150,180))
+        parent.geometry('{}x{}'.format(130,170))
 
         parent.minesleftlabel['text'] = "      "
         parent.minesleftlabel.grid(row = 0, column = 1, sticky = 'N')
@@ -218,5 +186,117 @@ class gridclass(Frame):
         gametwo.mainloop()
 
 
-gameone = minesweeperclass(6,6,4)
-gameone.mainloop()
+class minesclass():
+    def __init__(self, mr,mc,mn):
+        # creates random mines
+
+        self.mineslist = []
+        for i in range(mr):
+            self.mineslist.append([0]*mc)
+
+        cc = 0
+        while cc<mn:
+            a = randint(0,mr-1)
+            b = randint(0,mc-1)
+            if self.mineslist[a][b] == 'M':
+                pass
+            else:
+                self.mineslist[a][b] = 'M'
+                cc +=1
+
+        for xx in range(mr):
+            for yy in range(mc):
+                self.mineslist[xx][yy] = self.checkad(xx, yy,mr,mc)
+
+    def checkad(self,x,y,mr,mc):
+        if self.mineslist[x][y] == 'M':
+            return 'M'
+        else:
+            s = 0
+            for ii in range(x-1,x+2):
+                for jj in range(y-1, y+2):
+                    if ii in range(mr) and jj in range(mc):
+                        if self.mineslist[ii][jj] == 'M':
+                            s += 1
+            return s
+
+class Settings(Tk):
+    def __init__(self,parent):
+        Tk.__init__(self)
+
+        self.rows = 1
+        self.columns = 1
+
+        a = Button(self, text = '7x7', command = lambda: self.configure(5,5,5,parent))
+        a.pack()
+
+        b = Button(self, text = '10x10', command = lambda: self.configure(10,10,10,parent))
+        b.pack()
+
+        c = Button(self, text = '15x15', command = lambda: self.configure(15,15,20,parent))
+        c.pack()
+
+        custom = Button(self, text = 'Custom', command = lambda: self.customscreen(parent))
+        custom.pack()
+
+    def configure(self,r,c,n,parent):
+        self.rows = r
+        self.columns = c
+        self.mines = n
+        parent.destroy()
+        newgame = minesweeperclass(r,c,n)
+        self.destroy()
+        newgame.mainloop()
+
+    def customscreen(self,parent):
+        parent.destroy()
+        self.destroy()
+        self.cs = customscreen()
+        self.cs.mainloop()
+        
+
+class customscreen(Tk):
+    def __init__(self):
+        Tk.__init__(self)
+
+        c1 = Canvas(self, width = 300, height = 300)
+        w = Label(self, text="SETTINGS")
+        w.pack()
+
+        c1.pack()
+
+        self.entry1 = Entry (self) 
+        c1.create_window(180, 50, window=self.entry1)
+        self.entry2 = Entry (self) 
+        c1.create_window(180, 100, window=self.entry2)
+        self.entry3 = Entry (self) 
+        c1.create_window(180, 150, window=self.entry3)
+
+        label1= Label(self, text="ROWS :")
+        c1.create_window(80, 50,window=label1)
+
+        label2= Label(self, text="COLUMNS :")
+        c1.create_window(80, 100,window=label2)
+
+        label3= Label(self, text="MINES :")
+        c1.create_window(80,150,window=label3)
+        
+
+        button1 = Button(text='START',bg='brown', fg='white',height=2,width=5, command = lambda:self.startgame())
+        c1.create_window(170, 240, window=button1)
+
+    def startgame(self):
+        e1 = self.entry1.get()
+        e2 = self.entry2.get()
+        e3 = self.entry3.get()
+        if e1 == '' or e2 == '' or e3 == '':
+            warning = Label(self, text = 'Please fill all the fields')
+            c1.create_window(180,200, window = warning)
+        else:
+            print(e1,e2, e3)
+
+
+
+if __name__ == "__main__":
+    gameone = minesweeperclass(7,7,7)
+    gameone.mainloop()
